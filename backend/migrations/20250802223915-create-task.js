@@ -49,6 +49,16 @@ module.exports = {
         // but you can also choose to delete the task if the user is deleted
         onUpdate: 'CASCADE'
       },
+      created_by: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Users', // Assuming you have a Users table
+          key: 'id'
+        },
+        onDelete: 'CASCADE', // Ensures that if the user is deleted, the task is also deleted
+        onUpdate: 'CASCADE'
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
