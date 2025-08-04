@@ -1,10 +1,21 @@
-import express from "express";
-import { Sequelize } from "sequelize";
+const express= require('express');
+const { Sequelize } = require('sequelize');
+const dotenv = require('dotenv');
 
-import dotenv from "dotenv";
+const userRoutes = require('./routes/userRoutes.js');
+
+// Load environment variables
 dotenv.config();
+
+
 const app = express();
+app.use(express.json());
+
+app.use('/api', userRoutes);
+
 const PORT = process.env.PORT || 3000;
+
+
 
 // default route
 app.get("/", (req, res) => {
@@ -19,6 +30,8 @@ const sequelize = new Sequelize({
     host: 'localhost',
     dialect: 'postgres',
 });
+
+   
 
 // test database connection
 sequelize.authenticate()
