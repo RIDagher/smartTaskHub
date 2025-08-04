@@ -40,7 +40,7 @@ Track my development process here:
 - Bcrypt
 
 **AI Integration**
-- OpenAI API (optional)
+- OpenAI API (goal)
 
 **DevOps**
 - Docker
@@ -55,6 +55,6 @@ Track my development process here:
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/your-username/smart-task-hub.git
+git clone https://github.com/RIDagher/smart-task-hub.git
 cd smart-task-hub
 
