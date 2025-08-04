@@ -12,6 +12,17 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      // This allows us to access the project a task belongs to via task.project
+      Task.belongsTo(models.Project, { foreignKey: 'project_id', as: 'project' });
+      // This allows us to access the user assigned to a task via task.assignedUser
+      Task.belongsTo(models.User, { foreignKey: 'assigned_to', as: 'assignedUser' });
+      // This allows us to access the user who created the task via task.creator
+      Task.belongsTo(models.User, { foreignKey: 'created_by', as: 'creator' });
+      // This allows us to access comments made on a task via task.comments
+      Task.hasMany(models.Comment, { foreignKey: 'task_id', as: 'comments' });
+      
+      
+
     }
   }
   Task.init({
@@ -24,7 +35,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     due_date: DataTypes.DATE,
     project_id: DataTypes.INTEGER,
-    assigned_to: DataTypes.INTEGER
+    assigned_to: DataTypes.INTEGER,
+    created_by: {
+      allowNull: false,
+      type: DataTypes.INTEGER,}
   }, {
     sequelize,
     modelName: 'Task',
