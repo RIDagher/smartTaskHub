@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 
 const userRoutes = require('./routes/user.routes.js');
 const projectRoutes = require('./routes/project.routes.js');
+const projectMemberRoutes = require('./routes/projectMember.routes.js');
 
 // Load environment variables
 dotenv.config();
@@ -12,7 +13,7 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-app.use('/api', userRoutes, projectRoutes);
+app.use('/api', userRoutes, projectRoutes, projectMemberRoutes);
 
 const PORT = process.env.PORT || 3000;
 

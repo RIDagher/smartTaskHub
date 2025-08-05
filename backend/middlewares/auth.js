@@ -10,9 +10,11 @@ module.exports.authenticateUser = async (req, res, next) => {
   }
 
   try {
+    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("Decoded token:", decoded);
 
+    // Fetch user from database
     const user = await User.findByPk(decoded.id);
     console.log("User found:", user);
 
@@ -20,6 +22,7 @@ module.exports.authenticateUser = async (req, res, next) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    // Attach user to request object
     req.user = user;
     console.log("Authenticated user:", req.user);
     next();

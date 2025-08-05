@@ -44,14 +44,15 @@ module.exports.loginUser = async (req, res) => {
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid password' });
         }   
-        // Generate JWT token (assuming jwt is set up)
+        // Generate JWT token (with JWT_SECRET from environment variables)
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' } )
         // Return success response with token
+            // Attach user and token to request object for further use
         req.user = user;
         req.token = token;
         console.log("User logged in successfully:", user);
         // Send response with user details and token
-        // Note: Ensure to send the token in the response headers or body as per your API
+        // Send the token in the response headers or body as per your API
         res.setHeader('Authorization', `Bearer ${token}`);  
         // Return user details and token
         return res.status(200).json({ message: 'User logged in successfully', user, token });
@@ -76,6 +77,21 @@ module.exports.getUserById = async (req, res) => {
         return res.status(200).json({ message: 'User profile retrieved successfully', user });
     } catch (error) {
         console.error("Error retrieving user profile:", error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+module.exports.getAllUsers = async (req, res) => {
+    try {
+        // Fetch all users
+        const users = await User.findAll();
+
+        if (!users || users.length === 0) {
+            return res.status(404).json({ message: 'No users found' });
+        }
+        return res.status(200).json({ message: 'Users retrieved successfully', users });
+    } catch (error) {
+        console.error("Error retrieving users:", error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 }

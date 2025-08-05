@@ -3,6 +3,7 @@ module.exports.guardRole = (...allowedRoles) => {
 
     return (req, res, next) => {
         // Check if the user is authenticated
+        // 
         if (!req.user) {
             return res.status(401).json({ message: 'Unauthorized' });
         }
