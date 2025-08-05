@@ -27,3 +27,40 @@ module.exports.createProject = async (req, res) => {
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
+
+// Function to get all projects for a user
+module.exports.getUserProjects = async (req, res) => {
+    const userId = req.user?.id;
+    console.log("Fetching projects for user ID:", userId);
+
+    if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+    }
+
+    try {
+        // Fetch projects created by the user
+        const projects = await Project.findAll({ where: { created_by: userId } });
+        return res.status(200).json({ projects });
+    } catch (error) {
+        console.error("Error fetching user projects:", error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+// Function to get a specific project by ID
+module.exports.getProjectById = async (req, res) => {
+    const { id } = req.params;
+    console.log("Fetching project with ID:", id);
+
+    try {
+        // Fetch project by ID
+        const project = await Project.findByPk(id);
+        if (!project) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+        return res.status(200).json({ project });
+    } catch (error) {
+        console.error("Error fetching project by ID:", error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
