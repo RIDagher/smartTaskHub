@@ -45,7 +45,7 @@ module.exports.loginUser = async (req, res) => {
             return res.status(401).json({ message: 'Invalid password' });
         }   
         // Generate JWT token (assuming jwt is set up)
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' } )
         // Return success response with token
         req.user = user;
         req.token = token;
@@ -58,6 +58,24 @@ module.exports.loginUser = async (req, res) => {
 
     } catch (error) {
         console.error("Error logging in user:", error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+// Function to get user profile
+module.exports.getUserById = async (req, res) => {
+    const userId = req.params.id;
+
+    try {
+        // Find user by ID
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        // Return user details
+        return res.status(200).json({ message: 'User profile retrieved successfully', user });
+    } catch (error) {
+        console.error("Error retrieving user profile:", error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 }

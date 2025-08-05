@@ -2,7 +2,8 @@ const express= require('express');
 const { Sequelize } = require('sequelize');
 const dotenv = require('dotenv');
 
-const userRoutes = require('./routes/userRoutes.js');
+const userRoutes = require('./routes/user.routes.js');
+const projectRoutes = require('./routes/project.routes.js');
 
 // Load environment variables
 dotenv.config();
@@ -11,7 +12,7 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-app.use('/api', userRoutes);
+app.use('/api', userRoutes, projectRoutes);
 
 const PORT = process.env.PORT || 3000;
 
