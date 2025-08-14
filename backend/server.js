@@ -1,25 +1,26 @@
 const express= require('express');
 const { Sequelize } = require('sequelize');
 const dotenv = require('dotenv');
+// Load environment variables
+dotenv.config();
+
+const app = express();
+app.use(express.json());
+
+
+
+const PORT = process.env.PORT || 3000;
+
 
 const userRoutes = require('./routes/user.routes.js');
 const projectRoutes = require('./routes/project.routes.js');
 const projectMemberRoutes = require('./routes/projectMember.routes.js');
 
-// Load environment variables
-dotenv.config();
-
-
-const app = express();
-app.use(express.json());
+// afte
 
 app.use('/api', userRoutes, projectRoutes, projectMemberRoutes);
 
-const PORT = process.env.PORT || 3000;
 
-
-
-// default route
 app.get("/", (req, res) => {
     res.json({ message: "Welcome to Smart Task Hub Backend!" });
 })

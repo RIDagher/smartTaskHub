@@ -1,0 +1,7 @@
+
+
+on login navigate to the user's dashboard
+- common dashboard structure for users
+- retrieve users projects and tasks
+
+

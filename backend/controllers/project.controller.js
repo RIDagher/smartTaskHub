@@ -5,9 +5,14 @@ module.exports.createProject = async (req, res) => {
     console.log("Creating project with data:", req.body);
     const { name, description} = req.body;
 
-    
-    
+
+    // Get user ID from request
    const userId = req.user?.id
+    // Check if user is authorized to create project
+    if(req.user.id !== Number(req.params.id)) {
+        return res.status(403).json({ message: 'Forbidden' });
+    }
+
     console.log("User ID from request:", userId);
     // Validate user ID and project details
     if (!userId) {
@@ -30,7 +35,19 @@ module.exports.createProject = async (req, res) => {
 
 // Function to get all projects for a user
 module.exports.getUserProjects = async (req, res) => {
-    const userId = req.user?.id;
+
+    // Get user ID from request
+   if (req.query.member === "me") {
+        userId = req.user.id; // comes from JWT
+  } else if (req.params.id) {
+    // still allow explicit ID but verify it matches logged-in user
+    if (req.user.id !== Number(req.params.id)) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    // if explicit ID provided, use that
+    userId = req.params.id;
+  }
+    
     console.log("Fetching projects for user ID:", userId);
 
     if (!userId) {
@@ -40,7 +57,7 @@ module.exports.getUserProjects = async (req, res) => {
     try {
         // Fetch projects created by the user
         const projects = await Project.findAll({ where: { created_by: userId } });
-        return res.status(200).json({ projects });
+        return res.status(200).json( projects );
     } catch (error) {
         console.error("Error fetching user projects:", error);
         return res.status(500).json({ message: 'Internal server error' });
@@ -49,7 +66,11 @@ module.exports.getUserProjects = async (req, res) => {
 
 // Function to get a specific project by ID
 module.exports.getProjectById = async (req, res) => {
-    const { id } = req.params;
+    const userId = req.user.id;
+    // Check if user is authorized to access projects
+    if(req.user.id !== Number(req.params.id)) {  
+        return res.status(403).json({ message: 'Forbidden' });
+    }
     console.log("Fetching project with ID:", id);
 
     try {

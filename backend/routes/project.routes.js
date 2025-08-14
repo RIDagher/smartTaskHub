@@ -11,6 +11,8 @@ router.post('/user/:id/project', authenticateUser, createProject);
 
 // Route to get all projects for the authenticated user
 router.get('/user/:id/projects', authenticateUser, getUserProjects);
+// Route to get all projects for the authenticated user (alternative)
+router.get('/projects', authenticateUser, getUserProjects);
 
 // Route to get a specific project by ID
 router.get('/project/:id', authenticateUser, getProjectById);

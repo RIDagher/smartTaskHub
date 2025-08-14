@@ -2,7 +2,7 @@ const {ProjectMember} = require('../models');
 
 // Function to add a member to a project
 module.exports.addProjectMember = async (req, res) => {
-      const { projectId } = req.params;        // from the URL
+    const { projectId } = req.params;        // from the URL
     const { user_id } = req.body;            // from the request body
     const project_id = parseInt(projectId, 10); // Convert projectId to integer
     try {

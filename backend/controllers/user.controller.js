@@ -1,4 +1,4 @@
-const bycrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 const { User } = require('../models');
 const jwt = require('jsonwebtoken');
 
@@ -16,7 +16,7 @@ module.exports.registerUser = async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
         // Hash the password before saving (use bcrypt for hashing)
-        const hashedPassword = await bycrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
         // Set the hashed password in the request body
         req.body.password = hashedPassword;
 
@@ -31,6 +31,7 @@ module.exports.registerUser = async (req, res) => {
 
 // Function to login a user
 module.exports.loginUser = async (req, res) => {
+    console.log('Received request lo login')
     const { email, password } = req.body;
 
     try {
@@ -40,7 +41,7 @@ module.exports.loginUser = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
         // Check password (assuming passwords are stored hashed)
-        const isPasswordValid = await bycrypt.compare(password, user.password);
+        const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid password' });
         }   
@@ -55,7 +56,9 @@ module.exports.loginUser = async (req, res) => {
         // Send the token in the response headers or body as per your API
         res.setHeader('Authorization', `Bearer ${token}`);  
         // Return user details and token
+        console.log("JWT token generated:", token);
         return res.status(200).json({ message: 'User logged in successfully', user, token });
+        
 
     } catch (error) {
         console.error("Error logging in user:", error);

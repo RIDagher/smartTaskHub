@@ -1,34 +1,56 @@
+// middlewares/auth.js
 const jwt = require('jsonwebtoken');
-const { User } = require('../models'); // If you're using models/index.js to export all
+const { User } = require('../models');
+
+// Make sure dotenv is loaded BEFORE routes use this middleware
+// require('dotenv').config();
 
 module.exports.authenticateUser = async (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  console.log("Token from request:", token);
-
-  if (!token) {
-    return res.status(401).json({ message: 'No token provided' });
-  }
-
   try {
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded token:", decoded);
+    // 1) Extract "Bearer <token>" safely
+    const header = req.headers.authorization || '';
+    const [scheme, token] = header.split(' ');
 
-    // Fetch user from database
-    const user = await User.findByPk(decoded.id);
-    console.log("User found:", user);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    if (scheme !== 'Bearer' || !token) {
+      return res.status(401).json({ message: 'No token provided' });
     }
 
-    // Attach user to request object
-    req.user = user;
-    console.log("Authenticated user:", req.user);
-    next();
+    // (Optional) quick peek to debug exp/iat if needed
+    // const peek = jwt.decode(token, { complete: true });
+    // console.log('[auth] decoded (unsafe):', peek);
 
-  } catch (error) {
-    console.error("JWT verification error:", error.message);
-    return res.status(401).json({ message: 'Invalid token' });
+    // 2) Verify
+    // - Lock algorithm if you know it
+    // - Give small clockTolerance to avoid tiny skew issues
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+      algorithms: ['HS256'],
+      clockTolerance: 5, // seconds
+    });
+    // console.log('[auth] verified payload:', decoded);
+
+    // 3) Load user
+    const user = await User.findByPk(decoded.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // 4) Attach to request and proceed
+    req.user = user;
+    return next();
+
+  } catch (err) {
+    // Clear, specific messages help client behavior (e.g. auto-logout on expiration)
+    if (err.name === 'TokenExpiredError') {
+      console.error('[auth] TokenExpiredError:', err.expiredAt);
+      return res.status(401).json({ message: 'Token expired', expiredAt: err.expiredAt });
+    }
+    if (err.name === 'JsonWebTokenError') {
+      console.error('[auth] JsonWebTokenError:', err.message);
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    if (err.name === 'NotBeforeError') {
+      console.error('[auth] NotBeforeError:', err.date);
+      return res.status(401).json({ message: 'Token not active yet' });
+    }
+    console.error('[auth] Unexpected verify error:', err);
+    return res.status(500).json({ message: 'Auth verification failed' });
   }
 };
