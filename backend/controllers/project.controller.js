@@ -66,22 +66,29 @@ module.exports.getUserProjects = async (req, res) => {
 
 // Function to get a specific project by ID
 module.exports.getProjectById = async (req, res) => {
-    const userId = req.user.id;
-    // Check if user is authorized to access projects
-    if(req.user.id !== Number(req.params.id)) {  
-        return res.status(403).json({ message: 'Forbidden' });
-    }
+    const userId = req.user?.id;
+    const id = Number(req.params.id);
+
     console.log("Fetching project with ID:", id);
+    console.log("Logged-in user ID:", userId);
 
     try {
         // Fetch project by ID
         const project = await Project.findByPk(id);
+        console.log("Fetched project:", project);
+
         if (!project) {
             return res.status(404).json({ message: 'Project not found' });
         }
+
+        // Check if user is authorized to access the project
+        if (project.created_by !== userId) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+
         return res.status(200).json({ project });
     } catch (error) {
         console.error("Error fetching project by ID:", error);
         return res.status(500).json({ message: 'Internal server error' });
     }
-}
+};

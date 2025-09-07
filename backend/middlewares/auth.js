@@ -15,10 +15,6 @@ module.exports.authenticateUser = async (req, res, next) => {
       return res.status(401).json({ message: 'No token provided' });
     }
 
-    // (Optional) quick peek to debug exp/iat if needed
-    // const peek = jwt.decode(token, { complete: true });
-    // console.log('[auth] decoded (unsafe):', peek);
-
     // 2) Verify
     // - Lock algorithm if you know it
     // - Give small clockTolerance to avoid tiny skew issues

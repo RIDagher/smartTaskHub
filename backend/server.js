@@ -7,45 +7,48 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
+// import models to sync to database
+const db = require('./models');
+const sequelize = db.sequelize;
 
-
-const PORT = process.env.PORT || 3000;
-
+const PORT = process.env.PORT || 5000;
 
 const userRoutes = require('./routes/user.routes.js');
 const projectRoutes = require('./routes/project.routes.js');
 const projectMemberRoutes = require('./routes/projectMember.routes.js');
+const taskRoutes = require('./routes/task.routes.js')
 
-// afte
-
-app.use('/api', userRoutes, projectRoutes, projectMemberRoutes);
+app.use('/api', userRoutes, projectRoutes, projectMemberRoutes, taskRoutes);
 
 
 app.get("/", (req, res) => {
     res.json({ message: "Welcome to Smart Task Hub Backend!" });
 })
 
-// load environment variables
-const sequelize = new Sequelize({
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    host: 'localhost',
-    dialect: 'postgres',
-});
+// // load environment variables
+// const sequelize = new Sequelize(process.env.DATABASE_URL, {
+//   dialect: 'postgres',
+//   logging: false, // optional: disable verbose logs
+// });
 
-   
 
-// test database connection
-sequelize.authenticate()
-    .then(() => {
-        console.log("Database connection established successfully.");
-    })
-    .catch(err => {
-        console.error("Unable to connect to the database:", err);
+
+
+// Test DB connection and sync models
+const startServer = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("✅ Database connection established successfully.");
+
+    await sequelize.sync(); // This recreates all tables — use with caution
+    console.log("✅ All models synced to the database.");
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server is running on port ${PORT}`);
     });
+  } catch (err) {
+    console.error("❌ Unable to connect to the database:", err);
+  }
+};
 
-
-app.listen(PORT, () => {
-    console.log(`Server is running on ${PORT}`);
-})
+startServer();
