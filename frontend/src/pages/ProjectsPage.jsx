@@ -1,20 +1,20 @@
-// src/features/dashboard/UserDashboard.jsx
-
+import ProjectCard from "../components/ProjectCard";
 import { useProjects} from "../features/projects/useProjects";
 
-import ProjectCard from "../components/ProjectCard";
 
-export default function UserDashboard() {
+
+export default function ProjectsPage() {
   const { data: projects, isLoading, isError, error } = useProjects();
-  // const [activeProjectId, setActiveProjectId] = useState(null);
-  // const single = useProject(activeProjectId);
+
+  
 
   if (isLoading) return <p>Loading projects…</p>;
   if (isError) return <p className="text-red-600">{error.message}</p>;
 
   return (
-    <section className="flex flex-row">
+    <div className="flex flex-row ">
+      
       <ProjectCard projects={projects} />
-    </section>
+    </div>
   );
 }

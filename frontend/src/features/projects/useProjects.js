@@ -26,9 +26,11 @@ export function useProjects() {
  */
 export function useProject(projectId) {
   return useQuery({
+    
     queryKey: ["project", projectId], // Unique key for each project
     enabled: !!projectId, // `projectId` must be defined
     queryFn: () => apiFetch(`/project/${projectId}`), // Fetch project by ID
+    
   });
 }
 

@@ -64,7 +64,7 @@ export default function  RegisterForm ()  {
   return (
     <form onSubmit={handleSubmit}>
         {error && <p className='text-sm text-red-600'>{error}</p>}
-        <div className='flex flex-col'>
+        <div className='flex flex-col pt-20'>
             <label
             htmlFor='username'>Username</label>
             <input 
@@ -79,7 +79,7 @@ export default function  RegisterForm ()  {
         </div>
             <div className='flex flex-col'>
             <label
-            htmlFor='email'>Username</label>
+            htmlFor='email'>Email</label>
             <input 
             id='username'
             type='email'
